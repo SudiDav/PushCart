@@ -63,6 +63,20 @@ app.MapGet("/pushcart/{id}", async (int id, PushCartDbContext db) =>
         is Cart cart ? Results.Ok(cart) : Results.NotFound()
 );
 
+app.MapPut("/pushcart/{id}", async (int id, Cart cart, PushCartDbContext db) =>
+{
+    var item = await db.Cart.FindAsync(id);
+    if (item is null) return Results.NotFound();
+
+    item.ItemName = cart.ItemName;
+    item.IsPickedUp = cart.IsPickedUp;
+    item.Quantity = cart.Quantity;
+
+    await db.SaveChangesAsync();
+
+   return Results.NoContent();
+
+});
 
 app.Run();
 

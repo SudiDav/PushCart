@@ -78,6 +78,28 @@ app.MapPut("/pushcart/{id}", async (int id, Cart cart, PushCartDbContext db) =>
 
 });
 
+app.MapPost("/pushcart", async (Cart cart, PushCartDbContext db) =>
+{
+    db.Add(cart);
+
+    await db.SaveChangesAsync();
+
+    return Results.Created($"pushcart/{cart.Id}", cart);
+
+});
+
+app.MapDelete("/pushcart/{id}", async (int id, PushCartDbContext db) =>
+{
+    var item = await db.Cart.FindAsync(id);
+    if (item is null) return Results.NotFound();
+
+    db.Remove(item);
+
+    await db.SaveChangesAsync();
+
+    return Results.NoContent();
+});
+
 app.Run();
 
 internal record WeatherForecast(DateTime Date, int TemperatureC, string? Summary)
